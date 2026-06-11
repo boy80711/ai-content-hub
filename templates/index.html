@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+    <div class="hero-label">Auto-curated by AI &middot; Updated Daily</div>
+    <h1>追蹤每一個<br><em>改變世界</em>的 AI 瞬間</h1>
+    <p class="hero-sub">{{ site.subtitle }}  由 AI 自動抓取、改寫、分類，每日為你精選最有價值的 AI 資訊。</p>
+    <div class="hero-meta">
+        <div class="hero-stat"><strong>{{ articles | length }}</strong> 篇文章</div>
+        <div class="hero-stat"><strong>{{ all_tags | length }}</strong> 個主題</div>
+        <div class="hero-stat">Powered by <strong>AI</strong></div>
+    </div>
+</section>
+{% if all_tags %}
+<div class="filter-bar">
+    <button class="filter-btn active" onclick="filterArticles('all')">全部</button>
+    {% for tag in all_tags %}
+    <button class="filter-btn" onclick="filterArticles('{{ tag }}')">{{ tag }}</button>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="divider"><hr></div>
+<div class="articles-grid" id="articles-grid">
+    {% for article in articles %}
+    <a href="{{ '/article/' + article.id + '/' if site.url else './article/' + article.id + '/' }}" class="article-card" data-tags="{{ article.tags | join(',') }}">
+        <div class="card-meta">
+            <div class="card-tags">{% for tag in article.tags[:2] %}<span class="card-tag">{{ tag }}</span>{% endfor %}</div>
+            <span class="card-date">{{ article.scraped_at | time_ago if article.scraped_at else '' }}</span>
+        </div>
+        <h2 class="card-title">{{ article.title }}</h2>
+        <p class="card-summary">{{ article.summary }}</p>
+        <span class="card-source">{{ article.original_source }}</span>
+    </a>
+    {% else %}
+    <div class="empty-state">還沒有文章  等待 AI 抓取和處理中...</div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function filterArticles(tag){
+    document.querySelectorAll('.article-card').forEach(c=>{c.style.display=(tag==='all')?'':((c.dataset.tags||'').includes(tag)?'':'none')});
+    document.querySelectorAll('.filter-btn').forEach(b=>{b.classList.toggle('active',b.textContent.trim()===(tag==='all'?'全部':tag))});
+}
+</script>
+{% endblock %}

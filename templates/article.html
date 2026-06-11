@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }}  {{ site.title }}{% endblock %}
+{% block meta_desc %}{{ article.meta_description or article.summary }}{% endblock %}
+{% block content %}
+<article>
+    <div class="article-header">
+        <a href="{{ '/' if site.url else '../' }}" class="article-back">&larr; 返回首頁</a>
+        <div class="card-tags">{% for tag in article.tags %}<span class="card-tag">{{ tag }}</span>{% endfor %}</div>
+        <h1>{{ article.title }}</h1>
+        <div class="article-meta-bar">
+            <span>{{ article.original_source }}</span>
+            <span>{{ article.scraped_at | format_date }}</span>
+            <span>分類：{{ article.category }}</span>
+        </div>
+    </div>
+    <div class="article-body">
+        {{ article.content | md_to_html | safe }}
+        <div class="original-link">原始來源：<a href="{{ article.original_url }}" target="_blank" rel="noopener">{{ article.original_title }}</a></div>
+    </div>
+</article>
+{% endblock %}
