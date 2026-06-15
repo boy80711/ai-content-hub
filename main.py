@@ -16,7 +16,11 @@ DATA_FILE = Path("data/articles.json")
 def resolve_env(obj):
     """遞迴解析 ${VAR} 環境變數語法"""
     if isinstance(obj, str):
-        return re.sub(r'\$\{(\w+)\}', lambda m: os.environ.get(m.group(1), m.group(0)), obj)
+        return re.sub(
+            r'\$\{(\w+)\}',
+            lambda m: os.environ.get(m.group(1), m.group(0)),
+            obj
+        )
     elif isinstance(obj, dict):
         return {k: resolve_env(v) for k, v in obj.items()}
     elif isinstance(obj, list):
@@ -45,12 +49,12 @@ def save_articles(articles):
 
 def main():
     config = load_config()
-    # 檢查 API Key 是否有效
     ai_cfg = config.get("ai", {})
     key = ai_cfg.get("gemini_api_key", "")
     if not key or key.startswith("${"):
-        logger.error("GEMINI_API_KEY 未正確設定！請在 Settings > Secrets > Actions 新增")
+        logger.error("❌ GEMINI_API_KEY 未正確設定！請在 repo Settings > Secrets > Actions 新增")
         return
+    logger.info(f"✅ API Key 載入成功（前6字：{key[:6]}...）")
     new_articles = ArticleScraper(config).scrape_all()
     if new_articles:
         processed = AIProcessor(config).process_batch(new_articles)
@@ -61,12 +65,12 @@ def main():
             if a["id"] not in existing_ids:
                 existing.append(a)
                 added += 1
-        logger.info(f"新增 {added} 篇文章，共 {len(existing)} 篇")
+        logger.info(f"✅ 新增 {added} 篇，共 {len(existing)} 篇")
         save_articles(existing)
     else:
-        logger.info("沒有新文章")
+        logger.info("ℹ️ 沒有新文章")
     SiteGenerator(config).generate()
-    logger.info("網站生成完成！")
+    logger.info("✅ 網站生成完成！")
 
 
 if __name__ == "__main__":
