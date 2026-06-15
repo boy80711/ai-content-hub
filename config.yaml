@@ -1,24 +1,28 @@
 site:
-  title: AI è§€æ¸¬ç«™
-  subtitle: æ¯æ—¥è‡ªå‹•ç²¾é¸å…¨çƒ AI æœ€æ–°å‹•æ…‹
-  url: https://boy80711.github.io/ai-content-hub
-  language: zh-TW
+  title: "AI Æ[´ú¯¸"
+  subtitle: "¨C¤é¦Û°Êºë¿ï¥ş²y AI ³Ì·s°ÊºA"
+  url: "https://boy80711.github.io/ai-content-hub"
+  language: "zh-TW"
   articles_per_page: 12
 
 ai:
-  provider: gemini
-  gemini_key: CHANGE_ME
-  gemini_model: gemini-2.0-flash
+  provider: "gemini"
+  gemini_api_key: "${GEMINI_API_KEY}"
+  gemini_model: "gemini-2.0-flash"
 
 feeds:
-  - url: https://blog.google/technology/ai/rss/
-    category: Google AI
-  - url: https://techcrunch.com/category/artificial-intelligence/feed/
-    category: ç§‘æŠ€æ–°è
-  - url: https://huggingface.co/blog/feed.xml
-    category: HuggingFace
-  - url: https://arxiv.org/rss/cs.AI
-    category: AI è«–æ–‡
+  - url: "https://blog.google/technology/ai/rss/"
+    category: "Google AI"
+  - url: "https://openai.com/blog/rss.xml"
+    category: "OpenAI"
+  - url: "https://huggingface.co/blog/feed.xml"
+    category: "HuggingFace"
+  - url: "https://techcrunch.com/category/artificial-intelligence/feed/"
+    category: "¬ì§Ş·s»D"
+  - url: "https://feeds.feedburner.com/TheHackersNews"
+    category: "¸ê¦w·s»D"
+  - url: "https://arxiv.org/rss/cs.AI"
+    category: "AI ½×¤å"
 
 scraper:
   max_articles_per_feed: 5
