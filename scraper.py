@@ -1,4 +1,4 @@
-import feedparser
+嚜磨mport feedparser
 import requests
 import json
 import hashlib
@@ -66,14 +66,14 @@ class ArticleScraper:
         cutoff = datetime.now(timezone.utc) - timedelta(days=self.lookback_days)
         for feed_config in self.feeds:
             url = feed_config["url"]
-            category = feed_config.get("category", "未分類")
-            logger.info(f"抓取: {category} - {url}")
+            category = feed_config.get("category", "uncategorized")
+            logger.info(f"scraping: {category} - {url}")
             try:
                 resp = requests.get(url, timeout=self.timeout, headers={"User-Agent": "AI-Content-Hub/1.0"})
                 resp.raise_for_status()
                 feed = feedparser.parse(resp.content)
             except Exception as e:
-                logger.warning(f"失敗: {e}")
+                logger.warning(f"failed: {e}")
                 continue
             count = 0
             for entry in feed.entries:
@@ -99,7 +99,7 @@ class ArticleScraper:
                 })
                 self.seen_ids.add(article_id)
                 count += 1
-                logger.info(f"  {title[:50]}")
+                logger.info(f"  ok: {title[:50]}")
         self._save_seen_ids()
-        logger.info(f"共抓取 {len(all_articles)} 篇新文章")
+        logger.info(f"scraped {len(all_articles)} new articles")
         return all_articles
