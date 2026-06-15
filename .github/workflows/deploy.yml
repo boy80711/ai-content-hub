@@ -1,4 +1,4 @@
-﻿name: Daily Deploy
+name: Daily Deploy
 
 on:
   schedule:
@@ -10,6 +10,9 @@ on:
 permissions:
   contents: write
   pages: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-and-deploy:
