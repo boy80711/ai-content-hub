@@ -1,0 +1,30 @@
+﻿site:
+  title: "AI Observatory"
+  subtitle: "Daily AI News Auto-Curated by AI"
+  url: "https://boy80711.github.io/ai-content-hub"
+  language: "zh-TW"
+  articles_per_page: 12
+
+ai:
+  provider: "gemini"
+  gemini_api_key: "${GEMINI_API_KEY}"
+  gemini_model: "gemini-2.0-flash"
+
+feeds:
+  - url: "https://blog.google/technology/ai/rss/"
+    category: "Google AI"
+  - url: "https://openai.com/blog/rss.xml"
+    category: "OpenAI"
+  - url: "https://huggingface.co/blog/feed.xml"
+    category: "HuggingFace"
+  - url: "https://techcrunch.com/category/artificial-intelligence/feed/"
+    category: "Tech News"
+  - url: "https://feeds.feedburner.com/TheHackersNews"
+    category: "Security"
+  - url: "https://arxiv.org/rss/cs.AI"
+    category: "AI Papers"
+
+scraper:
+  max_articles_per_feed: 5
+  lookback_days: 3
+  request_timeout: 15
