@@ -8,7 +8,7 @@ from scraper import ArticleScraper
 from processor import AIProcessor
 from generator import SiteGenerator
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 DATA_FILE = Path("data/articles.json")
 
@@ -27,7 +27,13 @@ def resolve_env(obj):
 def load_config():
     with open("config.yaml", encoding="utf-8") as f:
         config = yaml.safe_load(f)
-    return resolve_env(config)
+    config = resolve_env(config)
+    # 直接從環境變數覆蓋 API Key，確保一定拿到
+    env_key = os.environ.get("GEMINI_API_KEY", "")
+    if env_key:
+        config.setdefault("ai", {})["gemini_api_key"] = env_key
+        logger.info("API Key loaded from env")
+    return config
 
 
 def load_existing():
@@ -47,13 +53,27 @@ def main():
     config = load_config()
     ai_cfg = config.get("ai", {})
     key = ai_cfg.get("gemini_api_key", "")
+
+    # 清除舊的 seen_ids 以確保重新抓取
+    seen_file = Path("data/seen_ids.json")
+    if seen_file.exists():
+        seen_file.unlink()
+        logger.info("Cleared seen_ids.json")
+
     if not key or key.startswith("${"):
-        logger.error("GEMINI_API_KEY 未正確設定！")
-        return
-    logger.info("API Key 載入成功")
+        logger.error("GEMINI_API_KEY not set! Check repo Settings > Secrets > Actions")
+        raise SystemExit(1)
+
+    logger.info(f"API Key starts with: {key[:8]}...")
+    logger.info(f"Model: {ai_cfg.get('gemini_model', 'unknown')}")
+    logger.info(f"Feeds: {len(config.get('feeds', []))}")
+
     new_articles = ArticleScraper(config).scrape_all()
+    logger.info(f"Scraped {len(new_articles)} new articles")
+
     if new_articles:
         processed = AIProcessor(config).process_batch(new_articles)
+        logger.info(f"Processed {len(processed)} articles")
         existing = load_existing()
         existing_ids = set(a["id"] for a in existing)
         added = 0
@@ -61,12 +81,13 @@ def main():
             if a["id"] not in existing_ids:
                 existing.append(a)
                 added += 1
-        logger.info(f"新增 {added} 篇，共 {len(existing)} 篇")
+        logger.info(f"Added {added} new, total {len(existing)}")
         save_articles(existing)
     else:
-        logger.info("沒有新文章")
+        logger.info("No new articles found")
+
     SiteGenerator(config).generate()
-    logger.info("網站生成完成！")
+    logger.info("Site generated!")
 
 
 if __name__ == "__main__":
